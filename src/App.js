@@ -1,57 +1,40 @@
-import React, { useReducer } from "react";
-const initialState = 0;
-function reducer(state, { type, value }) {
+import React, { useReducer, useEffect } from "react";
+const initialState = { loading: true, error: "", data: {} };
+const reducer = (state, { type, value }) => {
   switch (type) {
-    case "increment":
-      return state + value;
-    case "decrement":
-      return state - value;
+    case "Success":
+      return { ...state, loading: false, error: false, data: value };
+    case "failed":
+      return { ...state, loading: false, error: "something went wrong!" };
 
     default:
       return state;
   }
-}
-function App() {
-  const [count, dispatch] = useReducer(reducer, initialState);
+};
+
+export default function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/posts/1")
+      .then((res) => {
+        return res.json();
+      })
+      .then((res) => {
+        console.log("done");
+        // setTimeout(() => {
+        //   dispatch({ type: "Success", value: res });
+        // }, 2000);
+        dispatch({ type: "Success", value: res });
+      })
+      .catch((error) => {
+        dispatch({ type: "Failed" });
+      });
+  }, []);
+
   return (
-    <>
-      <div>{count}</div>
-      <div>
-        <button
-          type="button"
-          onClick={() => {
-            dispatch({ type: "increment", value: 1 });
-          }}
-        >
-          increment by 1
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            dispatch({ type: "increment", value: 1 });
-          }}
-        >
-          decrement by 1
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            dispatch({ type: "increment", value: 5 });
-          }}
-        >
-          increment by 5
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            dispatch({ type: "increment", value: 5 });
-          }}
-        >
-          decrement by 5
-        </button>
-      </div>
-    </>
+    <div>
+      {state.loading ? "Loading..." : state.data.title}
+      {state.error ? state.error : null}
+    </div>
   );
 }
-
-export default App;

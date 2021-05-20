@@ -2,7 +2,7 @@ import React, { useReducer, useEffect } from "react";
 import axios from "axios";
 const initialState = {
   postId: "",
-  buttonId: 1,
+  buttonId: "",
   data: {},
   loading: true,
   error: false,
@@ -10,13 +10,13 @@ const initialState = {
 const reducer = (state, { type, value }) => {
   switch (type) {
     case "success":
-      return { ...state, data: value, loading: false, error: false };
+      return { ...state, data: value, loading: false };
     case "clicked":
       return { ...state, buttonId: state.postId, loading: true };
     case "changed":
       return { ...state, postId: value };
     case "failed":
-      return { ...state, error: true, loading: false };
+      return { ...state, loading: false, error: true };
     default:
       return state;
   }
@@ -35,7 +35,7 @@ export default function App() {
     axios(`https://jsonplaceholder.typicode.com/posts/${state.buttonId}`)
       .then((response) => {
         console.log("success");
-        dispatch({ type: "success", value: response });
+        dispatch({ type: "success", value: response.data });
       })
       .catch((err) => {
         console.log("failed");
@@ -55,7 +55,7 @@ export default function App() {
           {state.loading
             ? "loading..."
             : state.error
-            ? "something is wrong!"
+            ? "Something went Wrong!"
             : state.data.title}
         </li>
       </ul>

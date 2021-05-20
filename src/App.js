@@ -32,7 +32,7 @@ export default function App() {
     dispatch({ type: "changed", value: e.target.value });
   };
   useEffect(() => {
-    axios(`https://jsonplaceholder.typicode.com/posts/${state.buttonId}`)
+    axios(` http://localhost:3000/posts/${state.buttonId}`)
       .then((response) => {
         console.log("success");
         dispatch({ type: "success", value: response.data });
@@ -44,7 +44,7 @@ export default function App() {
   }, [state.buttonId]);
   return (
     <div>
-      <ul>
+      <ul style={{ listStyle: "none" }}>
         <li>
           <input type="text" value={state.postId} onChange={handleChange} />
           <button type="button" onClick={handleClick}>

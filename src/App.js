@@ -1,64 +1,76 @@
-import React, { useReducer, useEffect } from "react";
-import axios from "axios";
-const initialState = {
-  postId: "",
-  buttonId: "",
-  data: {},
-  loading: true,
-  error: false,
-};
-const reducer = (state, { type, value }) => {
-  switch (type) {
-    case "success":
-      return { ...state, data: value, loading: false };
-    case "clicked":
-      return { ...state, buttonId: state.postId, loading: true };
-    case "changed":
-      return { ...state, postId: value };
-    case "failed":
-      return { ...state, loading: false, error: true };
-    default:
-      return state;
-  }
-};
+import React, { Component } from "react";
+import ToDo from "./Components/todo";
 
-export default function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const handleClick = () => {
-    dispatch({ type: "clicked" });
-    console.log("clicked");
+export default class App extends Component {
+  state = {
+    todoCounter: 1,
+    list: [
+      {
+        id: 1,
+        createdAt: new Date(),
+      },
+    ],
   };
-  const handleChange = (e) => {
-    dispatch({ type: "changed", value: e.target.value });
+
+  addToStart = () => {
+    const date = new Date();
+    const nextId = this.state.todoCounter + 1;
+    const newList = [{ id: nextId, createdAt: date }, ...this.state.list];
+    this.setState({
+      list: newList,
+      todoCounter: nextId,
+    });
   };
-  useEffect(() => {
-    axios(` http://localhost:3000/posts/${state.buttonId}`)
-      .then((response) => {
-        console.log("success");
-        dispatch({ type: "success", value: response.data });
-      })
-      .catch((err) => {
-        console.log("failed");
-        dispatch({ type: "failed" });
-      });
-  }, [state.buttonId]);
-  return (
-    <div>
-      <ul style={{ listStyle: "none" }}>
-        <li>
-          <input type="text" value={state.postId} onChange={handleChange} />
-          <button type="button" onClick={handleClick}>
-            show title
-          </button>
-        </li>
-        <li>
-          {state.loading
-            ? "loading..."
-            : state.error
-            ? "Something went Wrong!"
-            : state.data.title}
-        </li>
-      </ul>
-    </div>
-  );
+  addToEnd = () => {
+    const date = new Date();
+    const nextId = this.state.todoCounter + 1;
+    const newList = [...this.state.list, { id: nextId, createdAt: date }];
+    this.setState({
+      list: newList,
+      todoCounter: nextId,
+    });
+  };
+
+  sortByEarliest = () => {
+    const sortedList = this.state.list.sort((a, b) => {
+      return a.createdAt - b.createdAt;
+    });
+    this.setState({
+      list: [...sortedList],
+    });
+  };
+
+  sortByLatest = () => {
+    const sortedList = this.state.list.sort((a, b) => {
+      return b.createdAt - a.createdAt;
+    });
+    this.setState({
+      list: [...sortedList],
+    });
+  };
+
+  render() {
+    const { todoCounter, list } = this.state;
+    return (
+      <div>
+        <code>key=index</code>
+        <br />
+        <button onClick={this.addToStart}>Add New to Start</button>
+        <button onClick={this.addToEnd}>Add New to End</button>
+        <button onClick={this.sortByEarliest}>Sort by Earliest</button>
+        <button onClick={this.sortByLatest}>Sort by Latest</button>
+        <table>
+          <tr>
+            <th>Index</th>
+            <th>ID</th>
+            <th>Item</th>
+            <th>Created at</th>
+          </tr>
+          {list.map((todo, index) => (
+            <ToDo key={index} props={{ index, ...todo }} />
+          ))}
+        </table>
+      </div>
+    );
+  }
 }

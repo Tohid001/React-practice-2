@@ -53,7 +53,7 @@ export default class App extends Component {
     const { todoCounter, list } = this.state;
     return (
       <div>
-        <code>key=index</code>
+        {/* <code>key=index</code> */}
         <br />
         <button onClick={this.addToStart}>Add New to Start</button>
         <button onClick={this.addToEnd}>Add New to End</button>
@@ -67,7 +67,7 @@ export default class App extends Component {
             <th>Created at</th>
           </tr>
           {list.map((todo, index) => (
-            <ToDo key={index} props={{ index, ...todo }} />
+            <ToDo key={todo.id} props={{ index, ...todo }} />
           ))}
         </table>
       </div>

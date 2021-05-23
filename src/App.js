@@ -1,4 +1,4 @@
-import React, { Component, useReducer } from "react";
+import React, { useReducer } from "react";
 import ToDo from "./Components/todo";
 
 const initialState = {
@@ -64,7 +64,6 @@ export default function App() {
   const { todoCounter, list } = state;
   return (
     <div>
-      <br />
       <button onClick={addToStart}>Add New to Start</button>
       <button onClick={addToEnd}>Add New to End</button>
       <button onClick={sortByEarliest}>Sort by Earliest</button>

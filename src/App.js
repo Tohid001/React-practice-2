@@ -1,76 +1,85 @@
-import React, { Component } from "react";
+import React, { Component, useReducer } from "react";
 import ToDo from "./Components/todo";
 
-export default class App extends Component {
-  state = {
-    todoCounter: 1,
-    list: [
-      {
-        id: 1,
-        createdAt: new Date(),
-      },
-    ],
-  };
+const initialState = {
+  todoCounter: 1,
+  list: [
+    {
+      id: 1,
+      createdAt: new Date(),
+    },
+  ],
+};
+const reducer = (state, { type, value }) => {
+  switch (type) {
+    case "addToStart":
+      return value;
+    case "addToEnd":
+      return value;
+    case "sortByEarliest":
+      return { ...state, list: value };
+    case "sortByLatest":
+      return { ...state, list: value };
 
-  addToStart = () => {
+    default:
+      return state;
+  }
+};
+
+export default function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const addToStart = () => {
     const date = new Date();
-    const nextId = this.state.todoCounter + 1;
-    const newList = [{ id: nextId, createdAt: date }, ...this.state.list];
-    this.setState({
-      list: newList,
-      todoCounter: nextId,
+    const nextId = state.todoCounter + 1;
+    const newList = [{ id: nextId, createdAt: date }, ...state.list];
+    dispatch({
+      type: "addToStart",
+      value: { todoCounter: nextId, list: newList },
     });
   };
-  addToEnd = () => {
+  const addToEnd = () => {
     const date = new Date();
-    const nextId = this.state.todoCounter + 1;
-    const newList = [...this.state.list, { id: nextId, createdAt: date }];
-    this.setState({
-      list: newList,
-      todoCounter: nextId,
+    const nextId = state.todoCounter + 1;
+    const newList = [...state.list, { id: nextId, createdAt: date }];
+    dispatch({
+      type: "addToEnd",
+      value: { todoCounter: nextId, list: newList },
     });
   };
 
-  sortByEarliest = () => {
-    const sortedList = this.state.list.sort((a, b) => {
+  const sortByEarliest = () => {
+    const sortedList = state.list.sort((a, b) => {
       return a.createdAt - b.createdAt;
     });
-    this.setState({
-      list: [...sortedList],
-    });
+    dispatch({ type: "sortByEarliest", value: sortedList });
   };
 
-  sortByLatest = () => {
-    const sortedList = this.state.list.sort((a, b) => {
+  const sortByLatest = () => {
+    const sortedList = state.list.sort((a, b) => {
       return b.createdAt - a.createdAt;
     });
-    this.setState({
-      list: [...sortedList],
-    });
+    dispatch({ type: "sortByLatest", value: sortedList });
   };
-
-  render() {
-    const { todoCounter, list } = this.state;
-    return (
-      <div>
-        {/* <code>key=index</code> */}
-        <br />
-        <button onClick={this.addToStart}>Add New to Start</button>
-        <button onClick={this.addToEnd}>Add New to End</button>
-        <button onClick={this.sortByEarliest}>Sort by Earliest</button>
-        <button onClick={this.sortByLatest}>Sort by Latest</button>
-        <table>
-          <tr>
-            <th>Index</th>
-            <th>ID</th>
-            <th>Item</th>
-            <th>Created at</th>
-          </tr>
-          {list.map((todo, index) => (
-            <ToDo key={todo.id} props={{ index, ...todo }} />
-          ))}
-        </table>
-      </div>
-    );
-  }
+  const { todoCounter, list } = state;
+  return (
+    <div>
+      <br />
+      <button onClick={addToStart}>Add New to Start</button>
+      <button onClick={addToEnd}>Add New to End</button>
+      <button onClick={sortByEarliest}>Sort by Earliest</button>
+      <button onClick={sortByLatest}>Sort by Latest</button>
+      <table>
+        <tr>
+          <th>Index</th>
+          <th>ID</th>
+          <th>Item</th>
+          <th>Created at</th>
+        </tr>
+        {list.map((todo, index) => (
+          <ToDo key={todo.id} props={{ index, ...todo }} />
+        ))}
+      </table>
+    </div>
+  );
 }

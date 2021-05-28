@@ -1,84 +1,74 @@
 import React, { useReducer } from "react";
-import ToDo from "./Components/todo";
+// import "antd/dist/antd.css";
+// import { Form, Input, Button } from "antd";
 
 const initialState = {
-  todoCounter: 1,
-  list: [
-    {
-      id: 1,
-      createdAt: new Date(),
-    },
-  ],
+  firstName: null,
+  lastName: null,
+  Country: null,
+  City: null,
+  email: null,
+  password: null,
+  bio: null,
+  skills: [],
+  gender: null,
+  birthDate: null,
+  agree: null,
 };
 const reducer = (state, { type, value }) => {
   switch (type) {
-    case "addToStart":
-      return value;
-    case "addToEnd":
-      return value;
-    case "sortByEarliest":
-      return { ...state, list: value };
-    case "sortByLatest":
-      return { ...state, list: value };
+    case "similar":
+      return { ...state, ...value };
 
     default:
       return state;
   }
 };
-
 export default function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  const addToStart = () => {
-    const date = new Date();
-    const nextId = state.todoCounter + 1;
-    const newList = [{ id: nextId, createdAt: date }, ...state.list];
-    dispatch({
-      type: "addToStart",
-      value: { todoCounter: nextId, list: newList },
+  const [form, setFormData] = useReducer(reducer, initialState);
+  const {
+    firstName,
+    lastName,
+    Country,
+    City,
+    email,
+    password,
+    bio,
+    skil,
+    gender,
+    birthDate,
+    agree,
+  } = form;
+  const handleChange = (event) => {
+    setFormData({
+      type: "similar",
+      value: { [event.target.name]: event.target.value },
     });
   };
-  const addToEnd = () => {
-    const date = new Date();
-    const nextId = state.todoCounter + 1;
-    const newList = [...state.list, { id: nextId, createdAt: date }];
-    dispatch({
-      type: "addToEnd",
-      value: { todoCounter: nextId, list: newList },
-    });
-  };
-
-  const sortByEarliest = () => {
-    const sortedList = state.list.sort((a, b) => {
-      return a.createdAt - b.createdAt;
-    });
-    dispatch({ type: "sortByEarliest", value: sortedList });
-  };
-
-  const sortByLatest = () => {
-    const sortedList = state.list.sort((a, b) => {
-      return b.createdAt - a.createdAt;
-    });
-    dispatch({ type: "sortByLatest", value: sortedList });
-  };
-  const { todoCounter, list } = state;
   return (
-    <div>
-      <button onClick={addToStart}>Add New to Start</button>
-      <button onClick={addToEnd}>Add New to End</button>
-      <button onClick={sortByEarliest}>Sort by Earliest</button>
-      <button onClick={sortByLatest}>Sort by Latest</button>
-      <table>
-        <tr>
-          <th>Index</th>
-          <th>ID</th>
-          <th>Item</th>
-          <th>Created at</th>
-        </tr>
-        {list.map((todo, index) => (
-          <ToDo key={todo.id} props={{ index, ...todo }} />
-        ))}
-      </table>
-    </div>
+    <form>
+      <label for="firstName" class="form-label">
+        Email address
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        id="firstName"
+        placeholder="Doe"
+        value={firstName}
+        onChange={handleChange}
+      />
+      <label for="lastName" class="form-label">
+        Email address
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        id="lastName"
+        placeholder="Doe"
+        value={lastName}
+        onChange={handleChange}
+      />
+    </form>
   );
 }
